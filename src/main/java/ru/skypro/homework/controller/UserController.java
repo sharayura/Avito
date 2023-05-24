@@ -12,9 +12,7 @@ import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UserDto;
 
 @RestController
-@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("users")
-@RequiredArgsConstructor
 public class UserController {
 
     @Operation(summary = "Обновление пароля",
@@ -61,7 +59,7 @@ public class UserController {
                     )
             })
     @GetMapping("me")
-    public ResponseEntity<?> getUser(@RequestBody UserDto user) { //  TODO параметры??
+    public ResponseEntity<?> getUser() {
         return ResponseEntity.ok().build();
     }
 

@@ -18,9 +18,7 @@ import ru.skypro.homework.dto.Role;
 import static ru.skypro.homework.dto.Role.USER;
 
 @RestController
-@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("ads")
-@RequiredArgsConstructor
 public class AdsController {
 
     @Operation(summary = "Получить все объявления",
