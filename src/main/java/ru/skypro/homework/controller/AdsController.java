@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 
 @RestController
@@ -37,7 +38,7 @@ public class AdsController {
             tags = "Объявления",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                             schema = @Schema(implementation = CreateAdsDto.class)
                     )
             ),
@@ -46,7 +47,7 @@ public class AdsController {
                             responseCode = "201",
                             description = "Created",
                             content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                                     schema = @Schema(implementation = AdsDto.class)    //TODO
                             )
                     ),
@@ -56,7 +57,8 @@ public class AdsController {
                     )
             })
     @PostMapping()
-    public ResponseEntity<?> addAd(@RequestBody CreateAdsDto createAds) {
+    public ResponseEntity<?> addAd(@RequestPart("properties") CreateAdsDto properties,
+                                   @RequestPart("image") MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 
@@ -120,7 +122,7 @@ public class AdsController {
                     )
             })
     @PostMapping("{id}/comments")
-    public ResponseEntity<?> addComment(@PathVariable Long id) {
+    public ResponseEntity<?> addComment(@PathVariable Long id, @RequestBody CreateCommentDto createCommentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -217,7 +219,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{id}")
-    public ResponseEntity<?> updateAds(@PathVariable Long id) {
+    public ResponseEntity<?> updateAds(@PathVariable Long id, @RequestBody CreateAdsDto createAdsDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -297,7 +299,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long adId, @PathVariable Long commentId) {
+    public ResponseEntity<?> updateComment(@PathVariable Long adId, @PathVariable Long commentId, @RequestBody CommentDto commentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -356,8 +358,8 @@ public class AdsController {
                             description = "Forbidden"
                     )
             })
-    @PatchMapping("{id}/image")
-    public ResponseEntity<?> updateImage(@PathVariable Long id) {
+    @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateImage(@PathVariable Long id, @RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 

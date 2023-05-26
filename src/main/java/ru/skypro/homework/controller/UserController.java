@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UserDto;
 
@@ -107,8 +108,8 @@ public class UserController {
                             description = "Unauthorized"
                     )
             })
-    @PatchMapping("me/image")
-    public ResponseEntity<?> updateUserImage() {
+    @PatchMapping(value = "me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateUserImage(@RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 }
