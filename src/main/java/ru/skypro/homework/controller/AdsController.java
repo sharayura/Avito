@@ -25,12 +25,12 @@ public class AdsController {
                             description = "OK",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = AdsDto.class))
+                                    schema = @Schema(implementation = ResponseWrapperAds.class)
                             )
                     )
             })
     @GetMapping()
-    public ResponseEntity<?> getAllAds() {
+    public ResponseEntity<ResponseWrapperAds> getAllAds() {
         return ResponseEntity.ok().build();
     }
 
@@ -47,7 +47,7 @@ public class AdsController {
                             responseCode = "201",
                             description = "Created",
                             content = @Content(
-                                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = AdsDto.class)    //TODO
                             )
                     ),
@@ -57,7 +57,7 @@ public class AdsController {
                     )
             })
     @PostMapping()
-    public ResponseEntity<?> addAd(@RequestPart("properties") CreateAdsDto properties,
+    public ResponseEntity<AdsDto> addAd(@RequestPart("properties") CreateAdsDto properties,
                                    @RequestPart("image") MultipartFile image) {
         return ResponseEntity.ok().build();
     }
@@ -78,7 +78,7 @@ public class AdsController {
                             description = "OK",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = CommentDto.class))
+                                    schema = @Schema(implementation = ResponseWrapperComment.class)
                             )
                     ),
                     @ApiResponse(
@@ -87,7 +87,7 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}/comments")
-    public ResponseEntity<?> getComments(@PathVariable Long id) {
+    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Long id) {
         return ResponseEntity.ok().build();
     }
 
@@ -121,8 +121,8 @@ public class AdsController {
                             description = "Unauthorized"
                     )
             })
-    @PostMapping("{id}/comments")
-    public ResponseEntity<?> addComment(@PathVariable Long id, @RequestBody CreateCommentDto createCommentDto) {
+    @PostMapping( "{id}/comments")
+    public ResponseEntity<CommentDto> addComment(@PathVariable Long id, @RequestBody CreateCommentDto createCommentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -151,7 +151,7 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}")
-    public ResponseEntity<?> getAds(@PathVariable Long id) {
+    public ResponseEntity<FullAdsDto> getAds(@PathVariable Long id) {
         return ResponseEntity.ok().build();
     }
 
@@ -219,7 +219,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{id}")
-    public ResponseEntity<?> updateAds(@PathVariable Long id, @RequestBody CreateAdsDto createAdsDto) {
+    public ResponseEntity<AdsDto> updateAds(@PathVariable Long id, @RequestBody CreateAdsDto createAdsDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -299,7 +299,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long adId, @PathVariable Long commentId, @RequestBody CommentDto commentDto) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Long adId, @PathVariable Long commentId, @RequestBody CommentDto commentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -311,7 +311,7 @@ public class AdsController {
                             description = "OK",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    array = @ArraySchema(schema = @Schema(implementation = FullAdsDto.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = ResponseWrapperAds.class))
                             )
                     ),
                     @ApiResponse(
@@ -320,7 +320,7 @@ public class AdsController {
                     )
             })
     @GetMapping("me")
-    public ResponseEntity<?> getAdsMe() {
+    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
         return ResponseEntity.ok().build();
     }
 
@@ -359,7 +359,7 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateImage(@PathVariable Long id, @RequestParam MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable Long id, @RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 

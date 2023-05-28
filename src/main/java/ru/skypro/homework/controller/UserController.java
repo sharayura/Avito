@@ -59,7 +59,7 @@ public class UserController {
                     )
             })
     @GetMapping("me")
-    public ResponseEntity<?> getUser() {
+    public ResponseEntity<UserDto> getUser() {
         return ResponseEntity.ok().build();
     }
 
@@ -86,7 +86,7 @@ public class UserController {
                     )
             })
     @PatchMapping("me")
-    public ResponseEntity<?> updateUser(@RequestBody UserDto user) {
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user) {
         return ResponseEntity.ok().build();
     }
 
