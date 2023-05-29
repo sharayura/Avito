@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 
 @RestController
+@CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("ads")
 public class AdsController {
 
@@ -56,7 +57,7 @@ public class AdsController {
                             description = "Unauthorized"
                     )
             })
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(@RequestPart("properties") CreateAdsDto properties,
                                    @RequestPart("image") MultipartFile image) {
         return ResponseEntity.ok().build();
