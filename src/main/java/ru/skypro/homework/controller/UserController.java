@@ -38,7 +38,7 @@ public class UserController {
                             description = "Forbidden"
                     )
             })
-    @PostMapping("set_password")
+    @PostMapping("/set_password")
     public ResponseEntity<?> setPassword(@RequestBody NewPasswordDto newPassword) {
         return ResponseEntity.ok().build();
     }
@@ -59,7 +59,7 @@ public class UserController {
                             description = "Unauthorized"
                     )
             })
-    @GetMapping("me")
+    @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
         return ResponseEntity.ok().build();
     }
@@ -86,8 +86,9 @@ public class UserController {
                             description = "Unauthorized"
                     )
             })
-    @PatchMapping("me")
+    @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user) {
+        System.out.println("Test");
         return ResponseEntity.ok().build();
     }
 
@@ -109,7 +110,7 @@ public class UserController {
                             description = "Unauthorized"
                     )
             })
-    @PatchMapping(value = "me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUserImage(@RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
