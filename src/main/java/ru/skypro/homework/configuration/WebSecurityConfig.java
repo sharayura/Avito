@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.configuration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
