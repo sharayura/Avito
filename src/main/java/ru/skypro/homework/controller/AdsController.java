@@ -88,7 +88,7 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}/comments")
-    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Long id) {
+    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Integer id) {
         return ResponseEntity.ok().build();
     }
 
@@ -123,7 +123,7 @@ public class AdsController {
                     )
             })
     @PostMapping( "{id}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Long id, @RequestBody CreateCommentDto createCommentDto) {
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CreateCommentDto createCommentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -152,7 +152,7 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}")
-    public ResponseEntity<FullAdsDto> getAds(@PathVariable Long id) {
+    public ResponseEntity<FullAdsDto> getAds(@PathVariable Integer id) {
         return ResponseEntity.ok().build();
     }
 
@@ -181,7 +181,7 @@ public class AdsController {
                     )
             })
     @DeleteMapping("{id}")
-    public ResponseEntity<?> removeAd(@PathVariable Long id) {
+    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
         return ResponseEntity.ok().build();
     }
 
@@ -220,7 +220,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{id}")
-    public ResponseEntity<AdsDto> updateAds(@PathVariable Long id, @RequestBody CreateAdsDto createAdsDto) {
+    public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -255,7 +255,7 @@ public class AdsController {
                     )
             })
     @DeleteMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long adId, @PathVariable Long commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         return ResponseEntity.ok().build();
     }
 
@@ -300,7 +300,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long adId, @PathVariable Long commentId, @RequestBody CommentDto commentDto) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -360,7 +360,7 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Long id, @RequestParam MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 
