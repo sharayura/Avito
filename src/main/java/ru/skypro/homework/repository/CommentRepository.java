@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.skypro.homework.entity.Comment;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-
+public interface CommentRepository extends JpaRepository<Comment, Integer>{
 }

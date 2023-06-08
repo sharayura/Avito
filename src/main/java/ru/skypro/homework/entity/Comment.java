@@ -3,20 +3,21 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Data
-@Table(name = "comment")
+@Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
-    private Long id;
-    private int author;
-    private String authorImage;
-    private String authorFirstName;
-    private LocalDateTime createdAt;
-    private int pk;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private Long createdAt;
     private String text;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Ad ad;
+
 }
