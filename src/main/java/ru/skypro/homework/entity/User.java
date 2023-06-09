@@ -1,5 +1,6 @@
 package ru.skypro.homework.entity;
 
+
 import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;

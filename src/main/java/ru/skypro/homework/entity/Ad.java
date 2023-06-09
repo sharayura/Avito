@@ -19,3 +19,4 @@ public class Ad {
     private Image image;
 
 }
+
