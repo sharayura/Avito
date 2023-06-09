@@ -22,6 +22,4 @@ public class Image {
     @Lob
     private byte[] data;
 
-    @OneToOne
-    private User user;
 }

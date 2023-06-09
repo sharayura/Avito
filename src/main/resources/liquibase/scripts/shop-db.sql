@@ -46,7 +46,3 @@ CREATE TABLE if not exists comments
     user_id    INTEGER REFERENCES users (id),
     ad_id      INTEGER REFERENCES ads (id)
 );
-
-ALTER TABLE images
-    ADD user_id INTEGER REFERENCES users (id)
-;
