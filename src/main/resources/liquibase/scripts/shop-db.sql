@@ -9,11 +9,9 @@ CREATE TABLE if not exists images
     file_size  BIGINT NOT NULL,
     media_type TEXT   NOT NULL,
     data       oid    NOT NULL
-
 );
 
 -- changeset Yuri:1
-
 
 CREATE TABLE if not exists users
 (
@@ -48,8 +46,3 @@ CREATE TABLE if not exists comments
     user_id    INTEGER REFERENCES users (id),
     ad_id      INTEGER REFERENCES ads (id)
 );
-
-ALTER TABLE images
-    ADD user_id INTEGER REFERENCES users (id)
-;
-
