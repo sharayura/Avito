@@ -65,11 +65,12 @@ public class UserService implements UserDetailsManager {
         }
         return false;
     }
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+   @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public UserDto getUser() {
         User currentUser = userRepository.findByUsername(getCurrentUsername());
         UserDto userDto = new UserDto();
         userMapper.toUserDto(userDto, currentUser);
+        userDto.setImage("/users/image/" + currentUser.getId() + "/from-db");
         return userDto;
     }
 
