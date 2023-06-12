@@ -1,8 +1,11 @@
 package ru.skypro.homework.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
+@Data
 @Table(name = "ads")
 public class Ad {
     @Id

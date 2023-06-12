@@ -4,14 +4,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.service.impl.UserService;
+
+import java.io.IOException;
 
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
@@ -126,8 +131,25 @@ public class UserController {
                             description = "Unauthorized"
                     )
             })
-    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateUserImage(@RequestParam MultipartFile image) {
+    @PatchMapping(value = "me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateUserImage(@RequestParam("image") MultipartFile file) throws IOException {
+
+        userService.updateUserImage(file);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/image/{id}/db")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable Integer id) {
+        Image image = userService.getUserImage(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
+        headers.setContentLength(image.getData().length);
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(image.getData());
+    }
+
 }
+
+
+
