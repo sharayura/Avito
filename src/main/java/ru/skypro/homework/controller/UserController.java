@@ -138,7 +138,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/image/{id}/db")
+    @GetMapping("/image/{id}/from-db")
     public ResponseEntity<byte[]> getUserImage(@PathVariable Integer id) {
         Image image = userService.getUserImage(id);
 
