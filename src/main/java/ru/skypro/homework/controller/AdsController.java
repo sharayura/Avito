@@ -32,7 +32,8 @@ public class AdsController {
             })
     @GetMapping()
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(new ResponseWrapperAds()); /////todo
     }
 
     @Operation(summary = "Добавить объявление",
@@ -322,7 +323,8 @@ public class AdsController {
             })
     @GetMapping("me")
     public ResponseEntity<ResponseWrapperAds> getAdsMe() {
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(new ResponseWrapperAds()); /////todo
     }
 
     @Operation(summary = "Обновить картинку объявления",
