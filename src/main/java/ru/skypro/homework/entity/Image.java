@@ -7,6 +7,7 @@ import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
+@Data
 @Table(name = "images")
 public class Image {
     @Id

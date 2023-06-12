@@ -19,7 +19,6 @@ CREATE TABLE if not exists users
     first_name VARCHAR NOT NULL,
     last_name  VARCHAR NOT NULL,
     phone      VARCHAR NOT NULL,
-    email      VARCHAR NOT NULL,
     password   VARCHAR NOT NULL,
     username   VARCHAR NOT NULL,
     role       VARCHAR DEFAULT 'USER',
