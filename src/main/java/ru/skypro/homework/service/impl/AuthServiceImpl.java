@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.RegisterReqDto;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.mapper.UserMapper;
@@ -23,7 +24,9 @@ public class AuthServiceImpl implements AuthService {
     this.userMapper = userMapper;
   }
 
+
   @Override
+  @Transactional
   public boolean login(String userName, String password) {
     if (!manager.userExists(userName)) {
       return false;

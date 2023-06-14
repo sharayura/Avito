@@ -70,7 +70,6 @@ public class UserService implements UserDetailsManager {
         User currentUser = userRepository.findByUsername(getCurrentUsername());
         UserDto userDto = new UserDto();
         userMapper.toUserDto(userDto, currentUser);
-        userDto.setImage("/users/image/" + currentUser.getId() + "/from-db");
         return userDto;
     }
 
@@ -84,6 +83,7 @@ public class UserService implements UserDetailsManager {
         userMapper.toUser(currentUser, userDto);
         return true;
     }
+
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Image getUserImage(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
