@@ -15,14 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class WebSecurityConfig {
 
-  private static final String[] AUTH_WHITELIST = {
-    "/swagger-resources/**",
-    "/swagger-ui.html",
-    "/v3/api-docs",
-    "/webjars/**",
-    "/login",
-    "/register"
-  };
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v3/api-docs",
+            "/webjars/**",
+            "/login",
+            "/register",
+            "users/image/*/from-db"
+    };
 
 //  @Bean
 //  public InMemoryUserDetailsManager userDetailsService() {
@@ -36,25 +37,25 @@ public class WebSecurityConfig {
 //    return new InMemoryUserDetailsManager(user);
 //  }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf()
-        .disable()
-        .authorizeHttpRequests(
-            (authorization) ->
-                authorization
-                    .mvcMatchers(AUTH_WHITELIST)
-                    .permitAll()
-                    .mvcMatchers("/ads/**", "/users/**").authenticated()
-                    )
-        .cors()
-        .and()
-        .httpBasic(withDefaults());
-    return http.build();
-  }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()
+                .authorizeHttpRequests(
+                        (authorization) ->
+                                authorization
+                                        .mvcMatchers(AUTH_WHITELIST)
+                                        .permitAll()
+                                        .mvcMatchers("/users/**").authenticated()  //"/ads/**",
+                )
+                .cors()
+                .and()
+                .httpBasic(withDefaults());
+        return http.build();
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
