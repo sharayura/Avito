@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.skypro.homework.dto.CommentDto;
+import ru.skypro.homework.dto.CreateCommentDto;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
 
@@ -12,6 +13,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CommentMapper {
+
+    Comment toComment(CreateCommentDto createCommentDto);
 
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "author", source = "user.id")

@@ -139,7 +139,7 @@ public class AdsController {
             })
     @PostMapping("{id}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CreateCommentDto createCommentDto) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(commentService.addComment(id, createCommentDto));
     }
 
     @Operation(summary = "Получить информацию об объявлении",
