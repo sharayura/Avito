@@ -45,3 +45,6 @@ CREATE TABLE if not exists comments
     user_id    INTEGER REFERENCES users (id),
     ad_id      INTEGER REFERENCES ads (id)
 );
+
+-- changeset Yuri:2
+ALTER TABLE images DROP COLUMN file_path;

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UserDto;
@@ -16,7 +17,6 @@ import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 
 
@@ -36,13 +36,13 @@ public class UserService implements UserDetailsManager {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return user;
+        return user;   //todo это всё можно сделать в одну строку через Optional - вернуть user, если не null, или бросить исключение иначе
     }
 
     @Transactional
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsManager {
         }
         return false;
     }
-   @org.springframework.transaction.annotation.Transactional(readOnly = true)
+   @Transactional(readOnly = true)
     public UserDto getUser() {
         User currentUser = userRepository.findByUsername(getCurrentUsername());
         UserDto userDto = new UserDto();
@@ -74,27 +74,21 @@ public class UserService implements UserDetailsManager {
     }
 
     @Transactional
-    @org.springframework.transaction.annotation.Transactional
     public boolean updateUser(UserDto userDto) {
         User currentUser = userRepository.findByUsername(getCurrentUsername());
         if (currentUser == null) {
             return false;
         }
         userMapper.toUser(currentUser, userDto);
-        return true;
+        return true;  //todo это всё можно сделать в одну строку через Optional - вернуть true, если не null, или false иначе
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Image getUserImage(Integer userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
-        return user.getImage();
+        return userRepository.findById(userId).map(User::getImage).orElse(null);
     }
 
     @Transactional
-    @org.springframework.transaction.annotation.Transactional
     public void updateUserImage(MultipartFile file) throws IOException {
         Image image = new Image();
 
