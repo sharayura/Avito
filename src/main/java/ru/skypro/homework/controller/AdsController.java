@@ -7,16 +7,31 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.entity.Image;
+import ru.skypro.homework.service.impl.AdService;
+import ru.skypro.homework.service.impl.CommentService;
+
+import java.io.IOException;
 
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
 @RequestMapping("ads")
 public class AdsController {
+
+    private final AdService adService;
+    private final CommentService commentService;
+
+    public AdsController(AdService adService, CommentService commentService) {
+        this.adService = adService;
+        this.commentService = commentService;
+    }
 
     @Operation(summary = "Получить все объявления",
             tags = "Объявления",
@@ -32,7 +47,7 @@ public class AdsController {
             })
     @GetMapping()
     public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adService.getAllAds());
     }
 
     @Operation(summary = "Добавить объявление",
@@ -59,8 +74,8 @@ public class AdsController {
             })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(@RequestPart("properties") CreateAdsDto properties,
-                                   @RequestPart("image") MultipartFile image) {
-        return ResponseEntity.ok().build();
+                                        @RequestPart("image") MultipartFile image) throws IOException {
+        return ResponseEntity.ok(adService.addAd(properties, image));
     }
 
     @Operation(summary = "Получить комментарии объявления",
@@ -88,8 +103,8 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}/comments")
-    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Long id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResponseWrapperComment> getComments(@PathVariable Integer id) {
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(summary = "Добавить комментарий к объявлению",
@@ -122,9 +137,9 @@ public class AdsController {
                             description = "Unauthorized"
                     )
             })
-    @PostMapping( "{id}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Long id, @RequestBody CreateCommentDto createCommentDto) {
-        return ResponseEntity.ok().build();
+    @PostMapping("{id}/comments")
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CreateCommentDto createCommentDto) {
+        return ResponseEntity.ok(commentService.addComment(id, createCommentDto));
     }
 
     @Operation(summary = "Получить информацию об объявлении",
@@ -152,8 +167,8 @@ public class AdsController {
                     )
             })
     @GetMapping("{id}")
-    public ResponseEntity<FullAdsDto> getAds(@PathVariable Long id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<FullAdsDto> getAds(@PathVariable Integer id) {
+        return ResponseEntity.ok(adService.getAds(id));
     }
 
     @Operation(summary = "Удалить объявление",
@@ -181,7 +196,7 @@ public class AdsController {
                     )
             })
     @DeleteMapping("{id}")
-    public ResponseEntity<?> removeAd(@PathVariable Long id) {
+    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
         return ResponseEntity.ok().build();
     }
 
@@ -220,7 +235,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{id}")
-    public ResponseEntity<AdsDto> updateAds(@PathVariable Long id, @RequestBody CreateAdsDto createAdsDto) {
+    public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -255,7 +270,7 @@ public class AdsController {
                     )
             })
     @DeleteMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long adId, @PathVariable Long commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         return ResponseEntity.ok().build();
     }
 
@@ -300,7 +315,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long adId, @PathVariable Long commentId, @RequestBody CommentDto commentDto) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
         return ResponseEntity.ok().build();
     }
 
@@ -322,7 +337,8 @@ public class AdsController {
             })
     @GetMapping("me")
     public ResponseEntity<ResponseWrapperAds> getAdsMe() {
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(adService.getAdsMe());
     }
 
     @Operation(summary = "Обновить картинку объявления",
@@ -360,8 +376,20 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Long id, @RequestParam MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/image/{id}/from-db")
+    public ResponseEntity<byte[]> getAdImage(@PathVariable Integer id) {
+        Image image = adService.getAdImage(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
+        headers.setContentLength(image.getData().length);
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(image.getData());
     }
 
 }
