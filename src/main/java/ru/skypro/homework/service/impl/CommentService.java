@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.CreateCommentDto;
 import ru.skypro.homework.dto.ResponseWrapperComment;
@@ -10,7 +11,6 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -30,7 +30,7 @@ public class CommentService {
         this.adRepository = adRepository;
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional(readOnly = true)
     public ResponseWrapperComment getComments(Integer id) {
         ResponseWrapperComment responseWrapperComment = new ResponseWrapperComment();
         List<Comment> commentList = commentRepository.findAllByAdId(id);

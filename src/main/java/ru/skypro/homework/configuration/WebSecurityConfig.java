@@ -22,20 +22,9 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/login",
             "/register",
-            "/users/image/*/from-db"
+            "/users/image/*/from-db",
+            "/ads/image/*/from-db"
     };
-
-//  @Bean
-//  public InMemoryUserDetailsManager userDetailsService() {
-//    UserDetails user =
-//        User.builder()
-//            .username("user@gmail.com")
-//            .password("password")
-//            .passwordEncoder((plainText) -> passwordEncoder().encode(plainText))
-//            .roles("USER")
-//            .build();
-//    return new InMemoryUserDetailsManager(user);
-//  }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

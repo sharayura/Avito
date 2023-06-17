@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAdsDto;
@@ -14,7 +15,6 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -43,17 +43,12 @@ public class AdService {
         return responseWrapperAds;
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Image getAdImage(Integer adId) {
-        Ad ad = adRepository.findById(adId).orElse(null);
-        if (ad == null) {
-            return null;
-        }
-        return ad.getImage();
+        return adRepository.findById(adId).map(Ad::getImage).orElse(null);
     }
 
-    @Transactional
-    @org.springframework.transaction.annotation.Transactional
+   @Transactional
     public AdsDto addAd(CreateAdsDto properties, MultipartFile file) throws IOException {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
@@ -68,16 +63,12 @@ public class AdService {
         return adMapper.toAdsDto(ad);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public FullAdsDto getAds(Integer id) {
-        Ad ad = adRepository.findById(id).orElse(null);
-        if (ad == null) {
-            return null;
-        }
-        return adMapper.toFullAdsDto(ad);
+        return adRepository.findById(id).map(adMapper::toFullAdsDto).orElse(null);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ResponseWrapperAds getAdsMe() {
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
         User user = userRepository.findByUsername(userService.getCurrentUsername());
