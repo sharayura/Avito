@@ -116,6 +116,6 @@ public class UserService implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return !(userRepository.findByUsername(username) == null);
+        return userRepository.findByUsername(username).isPresent();
     }
 }
