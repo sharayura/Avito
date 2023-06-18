@@ -78,4 +78,11 @@ public class AdService {
         responseWrapperAds.setCount(adList.size());
         return responseWrapperAds;
     }
+
+    @Transactional
+    public void deleteAd(Integer id) {
+        adRepository.deleteById(id);
+        imageRepository.deleteById(id);
+    }
+
 }
