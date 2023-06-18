@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,7 +59,7 @@ public class AdService {
         image.setData(file.getBytes());
         imageRepository.save(image);
         ad.setImage(image);
-        ad.setUser(userRepository.findByUsername(userService.getCurrentUsername()));
+        ad.setUser(userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
         adRepository.save(ad);
         return adMapper.toAdsDto(ad);
     }
@@ -71,7 +72,7 @@ public class AdService {
     @Transactional
     public ResponseWrapperAds getAdsMe() {
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
-        User user = userRepository.findByUsername(userService.getCurrentUsername());
+        User user = userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<Ad> adList = adRepository.findAllByUserId(user.getId());
         responseWrapperAds.setResults(adMapper.adListToAdsDtoList(adList));
         responseWrapperAds.setCount(adList.size());

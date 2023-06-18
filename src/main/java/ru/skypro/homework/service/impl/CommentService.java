@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.CommentDto;
@@ -43,7 +44,7 @@ public class CommentService {
     public CommentDto addComment(Integer id, CreateCommentDto createCommentDto) {
         Comment comment = commentMapper.toComment(createCommentDto);
         comment.setAd(adRepository.findById(id).orElse(null));
-        comment.setUser(userRepository.findByUsername(userService.getCurrentUsername()));
+        comment.setUser(userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
         comment.setCreatedAt(System.currentTimeMillis());
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
