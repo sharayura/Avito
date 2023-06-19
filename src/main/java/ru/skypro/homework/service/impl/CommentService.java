@@ -49,4 +49,16 @@ public class CommentService {
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
+
+    public void deleteComment(int adId, int commentId) {
+        commentRepository.deleteByIdAndAdId(adId, commentId);
+    }
+
+
+    public CommentDto updateComment(int adId, int commentId, CommentDto commentDto) {
+        Comment updatedComment = commentRepository.findByIdAndAd_Id(commentId, adId);
+        updatedComment.setText(commentDto.getText());
+        commentRepository.save(updatedComment);
+        return commentMapper.toCommentDto(updatedComment);
+    }
 }

@@ -271,6 +271,7 @@ public class AdsController {
             })
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
+        commentService.deleteComment(adId, commentId);
         return ResponseEntity.ok().build();
     }
 
@@ -316,7 +317,7 @@ public class AdsController {
             })
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, commentDto));
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя",
