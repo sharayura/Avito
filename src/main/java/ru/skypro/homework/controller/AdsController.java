@@ -198,7 +198,7 @@ public class AdsController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
         adService.removeAd(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(summary = "Обновить информацию об объявлении",
