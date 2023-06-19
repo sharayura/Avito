@@ -49,4 +49,9 @@ public class CommentService {
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
+
+    @Transactional
+    public void deleteCommentsByAdId(Integer adId) {
+        commentRepository.deleteCommentsByAdId(adId);
+    }
 }

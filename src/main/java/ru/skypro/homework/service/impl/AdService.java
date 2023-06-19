@@ -27,13 +27,16 @@ public class AdService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final AdMapper adMapper;
+    private final CommentService commentService;
 
-    public AdService(AdRepository adRepository, ImageRepository imageRepository, UserRepository userRepository, UserService userService, AdMapper adMapper) {
+    public AdService(AdRepository adRepository, ImageRepository imageRepository, UserRepository userRepository, UserService userService, AdMapper adMapper,
+                     CommentService commentService) {
         this.adRepository = adRepository;
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.adMapper = adMapper;
+        this.commentService = commentService;
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -78,4 +81,12 @@ public class AdService {
         responseWrapperAds.setCount(adList.size());
         return responseWrapperAds;
     }
+
+    @Transactional
+    public void removeAd(Integer id) {
+        imageRepository.delete(adRepository.findById(id).map(Ad::getImage).orElseThrow());
+        commentService.deleteCommentsByAdId(id);
+        adRepository.deleteById(id);
+    }
+
 }
