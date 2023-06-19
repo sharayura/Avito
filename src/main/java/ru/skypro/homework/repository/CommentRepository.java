@@ -10,8 +10,4 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Integer>{
 
     List<Comment> findAllByAdId(Integer adId);
-
-    void deleteByIdAndAdId(Integer adId, Integer commentId);
-
-    Comment findByIdAndAd_Id(Integer adId, Integer commentId);
 }
