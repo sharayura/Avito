@@ -1,5 +1,6 @@
 package ru.skypro.homework.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
@@ -7,6 +8,6 @@ import java.util.List;
 
 @Data
 public class ResponseWrapperComment {
-    private final int count;
-    private final List<CommentDto> results;
+    private int count;
+    private List<CommentDto> results;
 }

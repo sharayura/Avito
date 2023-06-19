@@ -10,17 +10,16 @@ import javax.persistence.*;
 public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String description;
     private int price;
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User author;
+    private User user;
 
     @OneToOne
     private Image image;
 
-
 }
+
