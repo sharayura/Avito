@@ -12,6 +12,7 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
@@ -51,7 +52,21 @@ public class CommentService {
     }
 
     @Transactional
+
+    public void deleteComment(int commentId) {
+        commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    public CommentDto updateComment(int commentId, CommentDto commentDto) {
+        Comment updatedComment = commentRepository.findById(commentId).orElseThrow();
+        updatedComment.setText(commentDto.getText());
+        commentRepository.save(updatedComment);
+        return commentMapper.toCommentDto(updatedComment);
+      
+@Transactional
     public void deleteCommentsByAdId(Integer adId) {
         commentRepository.deleteCommentsByAdId(adId);
+
     }
 }
