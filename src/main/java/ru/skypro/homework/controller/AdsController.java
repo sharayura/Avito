@@ -197,6 +197,7 @@ public class AdsController {
             })
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
+        adService.removeAd(id);
         return ResponseEntity.ok().build();
     }
 
