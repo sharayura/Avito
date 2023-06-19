@@ -52,6 +52,7 @@ public class CommentService {
     }
 
     @Transactional
+
     public void deleteComment(int commentId) {
         commentRepository.deleteById(commentId);
     }
@@ -62,5 +63,10 @@ public class CommentService {
         updatedComment.setText(commentDto.getText());
         commentRepository.save(updatedComment);
         return commentMapper.toCommentDto(updatedComment);
+      
+@Transactional
+    public void deleteCommentsByAdId(Integer adId) {
+        commentRepository.deleteCommentsByAdId(adId);
+
     }
 }
