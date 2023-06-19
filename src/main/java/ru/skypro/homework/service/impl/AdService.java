@@ -52,7 +52,7 @@ public class AdService {
         return adRepository.findById(adId).map(Ad::getImage).orElse(null);
     }
 
-   @Transactional
+    @Transactional
     public AdsDto addAd(CreateAdsDto properties, MultipartFile file) throws IOException {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
@@ -89,4 +89,14 @@ public class AdService {
         adRepository.deleteById(id);
     }
 
+    @Transactional
+    public void updateAdImage(Integer id, MultipartFile file) throws IOException {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        Image image = imageRepository.findById(ad.getId()).orElse(new Image());
+        image.setFileSize(file.getSize());
+        image.setMediaType(file.getContentType());
+        image.setData(file.getBytes());
+        imageRepository.save(image);
+        ad.setImage(image);
+    }
 }
