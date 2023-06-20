@@ -237,6 +237,7 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
+        adService.updateDto(id, createAdsDto);
         return ResponseEntity.ok().build();
     }
 
