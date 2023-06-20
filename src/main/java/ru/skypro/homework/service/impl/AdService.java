@@ -99,4 +99,16 @@ public class AdService {
         imageRepository.save(image);
         ad.setImage(image);
     }
+
+    @Transactional
+    public AdsDto updateDto (Integer id, CreateAdsDto properties) {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        ad.setTitle(properties.getTitle());
+        ad.setDescription(properties.getDescription());
+        ad.setPrice(properties.getPrice());
+        adRepository.save(ad);
+
+        return adMapper.toAdsDto(ad);
+    }
+
 }

@@ -237,7 +237,7 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
     }
 
     @Operation(summary = "Удалить комментарий",

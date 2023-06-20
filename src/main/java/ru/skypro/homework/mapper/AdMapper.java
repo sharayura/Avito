@@ -37,4 +37,5 @@ public interface AdMapper {
 
     List<AdsDto> adListToAdsDtoList(List<Ad> adList);
 
+
 }
