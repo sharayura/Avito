@@ -197,7 +197,8 @@ public class AdsController {
             })
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        return ResponseEntity.ok().build();
+        adService.removeAd(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(summary = "Обновить информацию об объявлении",
@@ -236,7 +237,7 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
     }
 
     @Operation(summary = "Удалить комментарий",
@@ -271,7 +272,8 @@ public class AdsController {
             })
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
-        return ResponseEntity.ok().build();
+        commentService.deleteComment(commentId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(summary = "Обновить комментарий",
@@ -316,7 +318,7 @@ public class AdsController {
             })
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(commentService.updateComment(commentId, commentDto));
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя",
@@ -376,7 +378,8 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) throws IOException{
+        adService.updateAdImage(id, image);
         return ResponseEntity.ok().build();
     }
 

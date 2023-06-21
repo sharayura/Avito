@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,13 +27,16 @@ public class AdService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final AdMapper adMapper;
+    private final CommentService commentService;
 
-    public AdService(AdRepository adRepository, ImageRepository imageRepository, UserRepository userRepository, UserService userService, AdMapper adMapper) {
+    public AdService(AdRepository adRepository, ImageRepository imageRepository, UserRepository userRepository, UserService userService, AdMapper adMapper,
+                     CommentService commentService) {
         this.adRepository = adRepository;
         this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.adMapper = adMapper;
+        this.commentService = commentService;
     }
 
     public ResponseWrapperAds getAllAds() {
@@ -48,7 +52,7 @@ public class AdService {
         return adRepository.findById(adId).map(Ad::getImage).orElse(null);
     }
 
-   @Transactional
+    @Transactional
     public AdsDto addAd(CreateAdsDto properties, MultipartFile file) throws IOException {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
@@ -58,7 +62,7 @@ public class AdService {
         image.setData(file.getBytes());
         imageRepository.save(image);
         ad.setImage(image);
-        ad.setUser(userRepository.findByUsername(userService.getCurrentUsername()));
+        ad.setUser(userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
         adRepository.save(ad);
         return adMapper.toAdsDto(ad);
     }
@@ -71,10 +75,40 @@ public class AdService {
     @Transactional
     public ResponseWrapperAds getAdsMe() {
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
-        User user = userRepository.findByUsername(userService.getCurrentUsername());
+        User user = userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<Ad> adList = adRepository.findAllByUserId(user.getId());
         responseWrapperAds.setResults(adMapper.adListToAdsDtoList(adList));
         responseWrapperAds.setCount(adList.size());
         return responseWrapperAds;
     }
+
+    @Transactional
+    public void removeAd(Integer id) {
+        imageRepository.delete(adRepository.findById(id).map(Ad::getImage).orElseThrow());
+        commentService.deleteCommentsByAdId(id);
+        adRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updateAdImage(Integer id, MultipartFile file) throws IOException {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        Image image = imageRepository.findById(ad.getId()).orElse(new Image());
+        image.setFileSize(file.getSize());
+        image.setMediaType(file.getContentType());
+        image.setData(file.getBytes());
+        imageRepository.save(image);
+        ad.setImage(image);
+    }
+
+    @Transactional
+    public AdsDto updateDto (Integer id, CreateAdsDto properties) {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        ad.setTitle(properties.getTitle());
+        ad.setDescription(properties.getDescription());
+        ad.setPrice(properties.getPrice());
+        adRepository.save(ad);
+
+        return adMapper.toAdsDto(ad);
+    }
+
 }

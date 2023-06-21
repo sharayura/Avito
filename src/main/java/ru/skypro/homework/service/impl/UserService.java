@@ -18,6 +18,7 @@ import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Service
@@ -38,11 +39,7 @@ public class UserService implements UserDetailsManager {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return user;   //todo это всё можно сделать в одну строку через Optional - вернуть user, если не null, или бросить исключение иначе
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Transactional
@@ -58,16 +55,17 @@ public class UserService implements UserDetailsManager {
 
     @Transactional
     public boolean setPassword(NewPasswordDto newPasswordDto) {
-        User currentUser = userRepository.findByUsername(getCurrentUsername());
+        User currentUser = userRepository.findByUsername(getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (passwordEncoder.matches(newPasswordDto.getCurrentPassword(), currentUser.getPassword())) {
             currentUser.setPassword(passwordEncoder.encode(newPasswordDto.getNewPassword()));
             return true;
         }
         return false;
     }
-   @Transactional(readOnly = true)
+
+    @Transactional(readOnly = true)
     public UserDto getUser() {
-        User currentUser = userRepository.findByUsername(getCurrentUsername());
+        User currentUser = userRepository.findByUsername(getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         UserDto userDto = new UserDto();
         userMapper.toUserDto(userDto, currentUser);
         return userDto;
@@ -75,12 +73,9 @@ public class UserService implements UserDetailsManager {
 
     @Transactional
     public boolean updateUser(UserDto userDto) {
-        User currentUser = userRepository.findByUsername(getCurrentUsername());
-        if (currentUser == null) {
-            return false;
-        }
-        userMapper.toUser(currentUser, userDto);
-        return true;  //todo это всё можно сделать в одну строку через Optional - вернуть true, если не null, или false иначе
+        Optional<User> currentUser = userRepository.findByUsername(getCurrentUsername());
+        currentUser.ifPresent((user) -> userMapper.toUser(user, userDto));
+        return currentUser.isPresent();
     }
 
     @Transactional(readOnly = true)
@@ -90,18 +85,15 @@ public class UserService implements UserDetailsManager {
 
     @Transactional
     public void updateUserImage(MultipartFile file) throws IOException {
-        Image image = new Image();
-
+        User user = userRepository.findByUsername(getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Image image = imageRepository.findById(user.getId()).orElse(new Image());
         image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
-
-        User user = userRepository.findByUsername(getCurrentUsername());
         user.setImage(image);
 
     }
-
 
 
     @Override
@@ -122,6 +114,6 @@ public class UserService implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return !(userRepository.findByUsername(username) == null);
+        return userRepository.findByUsername(username).isPresent();
     }
 }

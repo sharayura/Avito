@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.CommentDto;
@@ -11,6 +12,7 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
@@ -43,9 +45,28 @@ public class CommentService {
     public CommentDto addComment(Integer id, CreateCommentDto createCommentDto) {
         Comment comment = commentMapper.toComment(createCommentDto);
         comment.setAd(adRepository.findById(id).orElse(null));
-        comment.setUser(userRepository.findByUsername(userService.getCurrentUsername()));
+        comment.setUser(userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
         comment.setCreatedAt(System.currentTimeMillis());
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
+    }
+
+    @Transactional
+    public void deleteComment(int commentId) {
+        commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    public CommentDto updateComment(int commentId, CommentDto commentDto) {
+        Comment updatedComment = commentRepository.findById(commentId).orElseThrow();
+        updatedComment.setText(commentDto.getText());
+        commentRepository.save(updatedComment);
+        return commentMapper.toCommentDto(updatedComment);
+    }
+
+    @Transactional
+    public void deleteCommentsByAdId(Integer adId) {
+        commentRepository.deleteCommentsByAdId(adId);
+
     }
 }
