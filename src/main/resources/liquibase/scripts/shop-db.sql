@@ -48,3 +48,9 @@ CREATE TABLE if not exists comments
 
 -- changeset Yuri:2
 ALTER TABLE images DROP COLUMN file_path;
+
+-- changeset Sergey:2
+
+ALTER TABLE comments ALTER COLUMN created_at TYPE TIMESTAMP USING created_at::TIMESTAMP without time zone;
+
+ALTER TABLE images DROP COLUMN file_size;

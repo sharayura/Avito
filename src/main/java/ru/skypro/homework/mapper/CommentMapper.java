@@ -9,6 +9,8 @@ import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
 
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -21,6 +23,13 @@ public interface CommentMapper {
     @Mapping(target = "authorFirstName", source = "user.firstName")
     @Mapping(target = "authorImage", expression = "java(getImage(comment))")
     CommentDto toCommentDto(Comment comment);
+
+    default Long createdAt(LocalDateTime value) {
+        if (value == null) {
+            return 0L;
+        }
+        return value.toInstant(ZoneOffset.ofHours(3)).toEpochMilli();
+    }
 
     default String getImage(Comment comment) {
         if (comment.getUser().getImage() == null) {
