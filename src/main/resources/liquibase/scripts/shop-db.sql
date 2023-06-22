@@ -51,6 +51,5 @@ ALTER TABLE images DROP COLUMN file_path;
 
 -- changeset Sergey:2
 
-ALTER TABLE comments ALTER COLUMN created_at TYPE TIMESTAMP USING created_at::TIMESTAMP without time zone;
+ALTER TABLE comments ALTER COLUMN created_at TYPE TIMESTAMP USING TIMESTAMP 'epoch' + created_at * INTERVAL '1 millisecond';
 
-ALTER TABLE images DROP COLUMN file_size;
