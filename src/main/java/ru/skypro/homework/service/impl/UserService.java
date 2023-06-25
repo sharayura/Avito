@@ -87,7 +87,7 @@ public class UserService implements UserDetailsManager {
     public void updateUserImage(MultipartFile file) throws IOException {
         User user = userRepository.findByUsername(getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Image image = imageRepository.findById(user.getId()).orElse(new Image());
-        image.setFileSize(file.getSize());
+//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
