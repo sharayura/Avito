@@ -86,51 +86,41 @@ public class AdService {
     @Transactional
     public void removeAd(Integer id) throws AccessDeniedException {
         Ad ad = adRepository.findById(id).orElseThrow();
-        String currentUsername = userService.getCurrentUsername();
-        String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
-        String adCreatorUsername = ad.getUser().getUsername();
-        if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername)) {
+        checkAccess(ad);
             commentService.deleteCommentsByAdId(id);
             imageRepository.delete(ad.getImage());
             adRepository.deleteById(id);
-        } else {
-            throw new AccessDeniedException("Access Denied");
-        }
     }
 
     @Transactional
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
         Ad ad = adRepository.findById(id).orElseThrow();
+        checkAccess(ad);
+        Image image = imageRepository.findById(ad.getId()).orElse(new Image());
+        image.setMediaType(file.getContentType());
+        image.setData(file.getBytes());
+        imageRepository.save(image);
+        ad.setImage(image);
+    }
+
+    @Transactional
+    public AdsDto updateDto(Integer id, CreateAdsDto properties) throws AccessDeniedException {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        checkAccess(ad);
+        ad.setTitle(properties.getTitle());
+        ad.setDescription(properties.getDescription());
+        ad.setPrice(properties.getPrice());
+        adRepository.save(ad);
+        return adMapper.toAdsDto(ad);
+    }
+
+    private void checkAccess(Ad ad) throws AccessDeniedException {
         String currentUsername = userService.getCurrentUsername();
         String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
         String adCreatorUsername = ad.getUser().getUsername();
-        if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername))  {
-            Image image = imageRepository.findById(ad.getId()).orElse(new Image());
-            image.setMediaType(file.getContentType());
-            image.setData(file.getBytes());
-            imageRepository.save(image);
-            ad.setImage(image);
-        } else {
-            throw new AccessDeniedException("Access denied");
+
+        if (!(currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername))) {
+            throw new AccessDeniedException("Access Denied");
         }
     }
-    @Transactional
-        public AdsDto updateDto (Integer id, CreateAdsDto properties) throws AccessDeniedException {
-            Ad ad = adRepository.findById(id).orElseThrow();
-            String currentUsername = userService.getCurrentUsername();
-            String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
-            String adCreatorUsername = ad.getUser().getUsername();
-            if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername)) {
-                ad.setTitle(properties.getTitle());
-                ad.setDescription(properties.getDescription());
-                ad.setPrice(properties.getPrice());
-                adRepository.save(ad);
-
-                return adMapper.toAdsDto(ad);
-            } else {
-                throw new AccessDeniedException("Access Denied");
-            }
-    }
-
-
 }
