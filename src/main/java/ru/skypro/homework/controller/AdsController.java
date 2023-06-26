@@ -197,7 +197,7 @@ public class AdsController {
                     )
             })
     @DeleteMapping("{id}")
-    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
+    public ResponseEntity<?> removeAd(@PathVariable Integer id) throws AccessDeniedException {
         adService.removeAd(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

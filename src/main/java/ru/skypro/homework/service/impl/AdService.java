@@ -84,23 +84,36 @@ public class AdService {
     }
 
     @Transactional
-    public void removeAd(Integer id) {
-        imageRepository.delete(adRepository.findById(id).map(Ad::getImage).orElseThrow());
-        commentService.deleteCommentsByAdId(id);
-        adRepository.deleteById(id);
+    public void removeAd(Integer id) throws AccessDeniedException {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        String currentUsername = userService.getCurrentUsername();
+        String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
+        String adCreatorUsername = ad.getUser().getUsername();
+        if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername)) {
+            commentService.deleteCommentsByAdId(id);
+            imageRepository.delete(ad.getImage());
+            adRepository.deleteById(id);
+        } else {
+            throw new AccessDeniedException("Access Denied");
+        }
     }
 
     @Transactional
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
         Ad ad = adRepository.findById(id).orElseThrow();
-        Image image = imageRepository.findById(ad.getId()).orElse(new Image());
-        image.setFileSize(file.getSize());
-        image.setMediaType(file.getContentType());
-        image.setData(file.getBytes());
-        imageRepository.save(image);
-        ad.setImage(image);
+        String currentUsername = userService.getCurrentUsername();
+        String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
+        String adCreatorUsername = ad.getUser().getUsername();
+        if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername))  {
+            Image image = imageRepository.findById(ad.getId()).orElse(new Image());
+            image.setMediaType(file.getContentType());
+            image.setData(file.getBytes());
+            imageRepository.save(image);
+            ad.setImage(image);
+        } else {
+            throw new AccessDeniedException("Access denied");
+        }
     }
-
     @Transactional
         public AdsDto updateDto (Integer id, CreateAdsDto properties) throws AccessDeniedException {
             Ad ad = adRepository.findById(id).orElseThrow();
