@@ -95,7 +95,7 @@ public class AdService {
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
         Ad ad = checkAccess(id);
         Image image = imageRepository.findById(ad.getId()).orElse(new Image());
-//        image.setFileSize(file.getSize());
+        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
