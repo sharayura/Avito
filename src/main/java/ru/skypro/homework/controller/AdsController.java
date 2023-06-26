@@ -19,6 +19,7 @@ import ru.skypro.homework.service.impl.AdService;
 import ru.skypro.homework.service.impl.CommentService;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @CrossOrigin(value = "http://localhost:3000")
@@ -236,7 +237,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("{id}")
-    public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
+    public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) throws AccessDeniedException {
         return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
     }
 

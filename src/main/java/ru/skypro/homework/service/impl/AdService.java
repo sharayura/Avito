@@ -17,6 +17,7 @@ import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 
@@ -101,14 +102,22 @@ public class AdService {
     }
 
     @Transactional
-    public AdsDto updateDto (Integer id, CreateAdsDto properties) {
-        Ad ad = adRepository.findById(id).orElseThrow();
-        ad.setTitle(properties.getTitle());
-        ad.setDescription(properties.getDescription());
-        ad.setPrice(properties.getPrice());
-        adRepository.save(ad);
+        public AdsDto updateDto (Integer id, CreateAdsDto properties) throws AccessDeniedException {
+            Ad ad = adRepository.findById(id).orElseThrow();
+            String currentUsername = userService.getCurrentUsername();
+            String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
+            String adCreatorUsername = ad.getUser().getUsername();
+            if (currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername)) {
+                ad.setTitle(properties.getTitle());
+                ad.setDescription(properties.getDescription());
+                ad.setPrice(properties.getPrice());
+                adRepository.save(ad);
 
-        return adMapper.toAdsDto(ad);
+                return adMapper.toAdsDto(ad);
+            } else {
+                throw new AccessDeniedException("Access Denied");
+            }
     }
+
 
 }
