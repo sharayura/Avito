@@ -58,7 +58,7 @@ public class AdService {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
 
-        image.setFileSize(file.getSize());
+//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -85,18 +85,17 @@ public class AdService {
 
     @Transactional
     public void removeAd(Integer id) throws AccessDeniedException {
-        Ad ad = adRepository.findById(id).orElseThrow();
-        checkAccess(ad);
-            commentService.deleteCommentsByAdId(id);
-            imageRepository.delete(ad.getImage());
-            adRepository.deleteById(id);
+        Ad ad = checkAccess(id);
+        commentService.deleteCommentsByAdId(id);
+        imageRepository.delete(ad.getImage());
+        adRepository.deleteById(id);
     }
 
     @Transactional
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
-        Ad ad = adRepository.findById(id).orElseThrow();
-        checkAccess(ad);
+        Ad ad = checkAccess(id);
         Image image = imageRepository.findById(ad.getId()).orElse(new Image());
+//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -105,16 +104,17 @@ public class AdService {
 
     @Transactional
     public AdsDto updateDto(Integer id, CreateAdsDto properties) throws AccessDeniedException {
-        Ad ad = adRepository.findById(id).orElseThrow();
-        checkAccess(ad);
+        Ad ad = checkAccess(id);
         ad.setTitle(properties.getTitle());
         ad.setDescription(properties.getDescription());
         ad.setPrice(properties.getPrice());
         adRepository.save(ad);
+
         return adMapper.toAdsDto(ad);
     }
 
-    private void checkAccess(Ad ad) throws AccessDeniedException {
+    private Ad checkAccess(Integer id) throws AccessDeniedException {
+        Ad ad = adRepository.findById(id).orElseThrow();
         String currentUsername = userService.getCurrentUsername();
         String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
         String adCreatorUsername = ad.getUser().getUsername();
@@ -122,5 +122,10 @@ public class AdService {
         if (!(currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername))) {
             throw new AccessDeniedException("Access Denied");
         }
+
+        return ad;
     }
 }
+
+
+
