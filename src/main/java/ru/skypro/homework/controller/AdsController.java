@@ -197,8 +197,14 @@ public class AdsController {
             })
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        adService.removeAd(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<String> accessResult = adService.checkAccess(id);
+
+        if (accessResult == null) {
+            adService.removeAd(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @Operation(summary = "Обновить информацию об объявлении",
@@ -237,9 +243,15 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
-        return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
-    }
+        ResponseEntity<String> accessResult = adService.checkAccess(id);
 
+        if (accessResult == null) {
+            AdsDto updatedAd = adService.updateDto(id, createAdsDto);
+            return ResponseEntity.ok(updatedAd);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
     @Operation(summary = "Удалить комментарий",
             tags = "Комментарии",
             parameters = {
@@ -378,21 +390,26 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) throws IOException{
-        adService.updateAdImage(id, image);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) throws IOException {
+        ResponseEntity<String> accessResult = adService.checkAccess(id);
+
+        if (accessResult == null) {
+            adService.updateAdImage(id, image);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+        @GetMapping("/image/{id}/from-db")
+        public ResponseEntity<byte[]> getAdImage (@PathVariable Integer id){
+            Image image = adService.getAdImage(id);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
+            headers.setContentLength(image.getData().length);
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(image.getData());
+        }
+
     }
 
-
-    @GetMapping("/image/{id}/from-db")
-    public ResponseEntity<byte[]> getAdImage(@PathVariable Integer id) {
-        Image image = adService.getAdImage(id);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
-        headers.setContentLength(image.getData().length);
-
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(image.getData());
-    }
-
-}
