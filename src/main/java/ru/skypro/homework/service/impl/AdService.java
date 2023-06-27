@@ -17,6 +17,7 @@ import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 
@@ -57,7 +58,7 @@ public class AdService {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
 
-//        image.setFileSize(file.getSize());
+        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -83,17 +84,18 @@ public class AdService {
     }
 
     @Transactional
-    public void removeAd(Integer id) {
-        imageRepository.delete(adRepository.findById(id).map(Ad::getImage).orElseThrow());
+    public void removeAd(Integer id) throws AccessDeniedException {
+        Ad ad = checkAccess(id);
         commentService.deleteCommentsByAdId(id);
+        imageRepository.delete(ad.getImage());
         adRepository.deleteById(id);
     }
 
     @Transactional
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
-        Ad ad = adRepository.findById(id).orElseThrow();
+        Ad ad = checkAccess(id);
         Image image = imageRepository.findById(ad.getId()).orElse(new Image());
-//        image.setFileSize(file.getSize());
+        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -101,8 +103,8 @@ public class AdService {
     }
 
     @Transactional
-    public AdsDto updateDto (Integer id, CreateAdsDto properties) {
-        Ad ad = adRepository.findById(id).orElseThrow();
+    public AdsDto updateDto(Integer id, CreateAdsDto properties) throws AccessDeniedException {
+        Ad ad = checkAccess(id);
         ad.setTitle(properties.getTitle());
         ad.setDescription(properties.getDescription());
         ad.setPrice(properties.getPrice());
@@ -111,4 +113,16 @@ public class AdService {
         return adMapper.toAdsDto(ad);
     }
 
+    private Ad checkAccess(Integer id) throws AccessDeniedException {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        String currentUsername = userService.getCurrentUsername();
+        String currentUserRole = userService.loadUserByUsername(currentUsername).getAuthorities().iterator().next().getAuthority();
+        String adCreatorUsername = ad.getUser().getUsername();
+
+        if (!(currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername))) {
+            throw new AccessDeniedException("Access Denied");
+        }
+
+        return ad;
+    }
 }
