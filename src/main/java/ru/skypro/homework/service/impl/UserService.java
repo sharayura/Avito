@@ -116,4 +116,9 @@ public class UserService implements UserDetailsManager {
     public boolean userExists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
+
+    public String getCurrentUserRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().iterator().next().getAuthority();
+    }
 }
