@@ -58,7 +58,7 @@ public class AdService {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
 
-        image.setFileSize(file.getSize());
+        // image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
