@@ -1,5 +1,7 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +103,7 @@ public class AdService {
     }
 
     @Transactional
-    public AdsDto updateDto (Integer id, CreateAdsDto properties) {
+    public AdsDto updateDto(Integer id, CreateAdsDto properties) {
         Ad ad = adRepository.findById(id).orElseThrow();
         ad.setTitle(properties.getTitle());
         ad.setDescription(properties.getDescription());
@@ -111,4 +113,12 @@ public class AdService {
         return adMapper.toAdsDto(ad);
     }
 
+    @Transactional
+    public boolean checkAdAccess(Integer id) {
+        Ad ad = adRepository.findById(id).orElseThrow();
+        String currentUserRole = userService.getCurrentUserRole();
+        String adCreatorUsername = ad.getUser().getUsername();
+        String currentUsername = userService.getCurrentUsername();
+        return currentUserRole.equals("ADMIN") || adCreatorUsername.equals(currentUsername);
+    }
 }
