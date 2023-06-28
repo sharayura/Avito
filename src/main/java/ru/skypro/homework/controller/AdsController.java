@@ -197,8 +197,11 @@ public class AdsController {
             })
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        adService.removeAd(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (adService.checkAdAccess(id)) {
+            adService.removeAd(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Обновить информацию об объявлении",
@@ -237,7 +240,10 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
-        return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
+        if (adService.checkAdAccess(id)) {
+            return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Удалить комментарий",
@@ -272,8 +278,11 @@ public class AdsController {
             })
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
-        commentService.deleteComment(commentId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (commentService.checkCommentAccess(commentId)) {
+            commentService.deleteComment(commentId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Обновить комментарий",
@@ -318,7 +327,10 @@ public class AdsController {
             })
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, commentDto));
+        if (commentService.checkCommentAccess(commentId)) {
+            return ResponseEntity.ok(commentService.updateComment(commentId, commentDto));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя",
@@ -378,7 +390,7 @@ public class AdsController {
                     )
             })
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) throws IOException{
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestParam MultipartFile image) throws IOException {
         adService.updateAdImage(id, image);
         return ResponseEntity.ok().build();
     }
