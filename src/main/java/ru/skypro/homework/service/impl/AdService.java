@@ -57,7 +57,7 @@ public class AdService {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
 
-        image.setFileSize(file.getSize());
+//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -93,7 +93,7 @@ public class AdService {
     public void updateAdImage(Integer id, MultipartFile file) throws IOException {
         Ad ad = adRepository.findById(id).orElseThrow();
         Image image = imageRepository.findById(ad.getId()).orElse(new Image());
-        image.setFileSize(file.getSize());
+//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);

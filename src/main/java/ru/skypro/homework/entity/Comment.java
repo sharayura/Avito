@@ -3,6 +3,7 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -12,7 +13,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Long createdAt;
+    private LocalDateTime createdAt;
     private String text;
 
     @ManyToOne

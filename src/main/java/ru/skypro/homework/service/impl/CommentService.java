@@ -13,6 +13,7 @@ import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -46,7 +47,7 @@ public class CommentService {
         Comment comment = commentMapper.toComment(createCommentDto);
         comment.setAd(adRepository.findById(id).orElse(null));
         comment.setUser(userRepository.findByUsername(userService.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
-        comment.setCreatedAt(System.currentTimeMillis());
+        comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
