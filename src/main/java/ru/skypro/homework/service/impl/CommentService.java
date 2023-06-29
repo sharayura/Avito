@@ -69,7 +69,7 @@ public class CommentService {
         commentRepository.deleteCommentsByAdId(adId);
     }
 
-    public boolean checkCommentAccess(Integer CommentId) {
+    public boolean hasCommentAccess(Integer CommentId) {
         Comment comment = commentRepository.findById(CommentId).orElseThrow();
         String currentUserRole = userService.getCurrentUserRole();
         String commentCreatorUsername = comment.getUser().getUsername();

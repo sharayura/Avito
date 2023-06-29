@@ -1,7 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +57,6 @@ public class AdService {
         Ad ad = adMapper.toAd(properties);
         Image image = new Image();
 
-//        image.setFileSize(file.getSize());
         image.setMediaType(file.getContentType());
         image.setData(file.getBytes());
         imageRepository.save(image);
@@ -114,7 +111,7 @@ public class AdService {
     }
 
     @Transactional
-    public boolean checkAdAccess(Integer id) {
+    public boolean hasAdAccess(Integer id) {
         Ad ad = adRepository.findById(id).orElseThrow();
         String currentUserRole = userService.getCurrentUserRole();
         String adCreatorUsername = ad.getUser().getUsername();
