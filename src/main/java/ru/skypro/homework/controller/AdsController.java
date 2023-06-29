@@ -197,7 +197,7 @@ public class AdsController {
             })
     @DeleteMapping("{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        if (adService.checkAdAccess(id)) {
+        if (adService.hasAdAccess(id)) {
             adService.removeAd(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
@@ -240,7 +240,7 @@ public class AdsController {
             })
     @PatchMapping("{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id, @RequestBody CreateAdsDto createAdsDto) {
-        if (adService.checkAdAccess(id)) {
+        if (adService.hasAdAccess(id)) {
             return ResponseEntity.ok(adService.updateDto(id, createAdsDto));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -278,7 +278,7 @@ public class AdsController {
             })
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
-        if (commentService.checkCommentAccess(commentId)) {
+        if (commentService.hasCommentAccess(commentId)) {
             commentService.deleteComment(commentId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
@@ -327,7 +327,7 @@ public class AdsController {
             })
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId, @RequestBody CommentDto commentDto) {
-        if (commentService.checkCommentAccess(commentId)) {
+        if (commentService.hasCommentAccess(commentId)) {
             return ResponseEntity.ok(commentService.updateComment(commentId, commentDto));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
