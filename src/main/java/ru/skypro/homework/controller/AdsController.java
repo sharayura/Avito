@@ -64,7 +64,7 @@ public class AdsController {
                             description = "Created",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = AdsDto.class)    //TODO
+                                    schema = @Schema(implementation = AdsDto.class)
                             )
                     ),
                     @ApiResponse(
