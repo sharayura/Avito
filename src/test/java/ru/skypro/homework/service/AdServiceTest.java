@@ -7,9 +7,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-
 import org.springframework.web.multipart.MultipartFile;
+import static org.mockito.ArgumentMatchers.*;
 
+import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Image;
@@ -23,12 +24,9 @@ import ru.skypro.homework.service.impl.CommentService;
 import ru.skypro.homework.service.impl.UserService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -103,19 +101,29 @@ public class AdServiceTest {
         ad2.setTitle("Title 2");
         ad2.setDescription("Description 2");
         mockAds.add(ad2);
-        ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
-        responseWrapperAds.setCount(mockAds.size());
-        responseWrapperAds.setResults(adMapper.adListToAdsDtoList(mockAds));
 
-        when(adService.getAllAds()).thenReturn(responseWrapperAds);
+        List<AdsDto> expectedAdsDtoList = new ArrayList<>();
+        AdsDto expectedAdDto1 = new AdsDto();
+        expectedAdDto1.setTitle(ad1.getTitle());
+        expectedAdsDtoList.add(expectedAdDto1);
+
+        AdsDto expectedAdDto2 = new AdsDto();
+        expectedAdDto2.setTitle(ad2.getTitle());
+        expectedAdsDtoList.add(expectedAdDto2);
+
+        ResponseWrapperAds expectedResponse = new ResponseWrapperAds();
+        expectedResponse.setCount(mockAds.size());
+        expectedResponse.setResults(expectedAdsDtoList);
+
+        when(adRepository.findAll()).thenReturn(mockAds);
+        when(adMapper.adListToAdsDtoList(mockAds)).thenReturn(expectedAdsDtoList);
+
         ResponseWrapperAds result = adService.getAllAds();
 
         Assertions.assertNotNull(result);
-        assertNotNull(result.getResults());
-        assertFalse(result.getResults().isEmpty());
-        verify(adService, times(1)).getAllAds();
+        Assertions.assertNotNull(result.getResults());
+        assertEquals(mockAds.size(), result.getCount());
+        assertEquals(expectedResponse, result);
     }
-
-
-
 }
+
