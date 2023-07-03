@@ -1,17 +1,19 @@
 package ru.skypro.homework.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Image;
-import ru.skypro.homework.entity.User;
+
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.ImageRepository;
@@ -25,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -86,5 +89,33 @@ public class AdServiceTest {
 
         verify(imageRepository).save(any(Image.class));
     }
+    @Test
+    public void testGetAllAds() {
+        List<Ad> mockAds = new ArrayList<>();
+        Ad ad1 = new Ad();
+        ad1.setId(1);
+        ad1.setTitle("Title 1");
+        ad1.setDescription("Description 1");
+        mockAds.add(ad1);
+
+        Ad ad2 = new Ad();
+        ad2.setId(2);
+        ad2.setTitle("Title 2");
+        ad2.setDescription("Description 2");
+        mockAds.add(ad2);
+        ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
+        responseWrapperAds.setCount(mockAds.size());
+        responseWrapperAds.setResults(adMapper.adListToAdsDtoList(mockAds));
+
+        when(adService.getAllAds()).thenReturn(responseWrapperAds);
+        ResponseWrapperAds result = adService.getAllAds();
+
+        Assertions.assertNotNull(result);
+        assertNotNull(result.getResults());
+        assertFalse(result.getResults().isEmpty());
+        verify(adService, times(1)).getAllAds();
+    }
+
+
 
 }
