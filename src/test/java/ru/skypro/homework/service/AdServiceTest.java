@@ -5,16 +5,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
+
 import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dto.CreateAdsDto;
+import ru.skypro.homework.dto.FullAdsDto;
 import ru.skypro.homework.dto.ResponseWrapperAds;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Image;
 
+import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.ImageRepository;
@@ -23,11 +32,14 @@ import ru.skypro.homework.service.impl.AdService;
 import ru.skypro.homework.service.impl.CommentService;
 import ru.skypro.homework.service.impl.UserService;
 
+
 import java.io.IOException;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static ru.skypro.homework.service.AdServiceTestFabric.*;
+
+
 
 @SpringBootTest
 public class AdServiceTest {
@@ -62,44 +74,43 @@ public class AdServiceTest {
 
     @Test
     public void testRemoveAd() {
-        Integer id = 1;
+        when(adRepository.findById(AD_ID)).thenReturn(Optional.of(new Ad()));
         Ad ad = new Ad();
-        Image image = new Image();
-        ad.setImage(image);
+        ad.setImage(new Image());
 
-        when(adRepository.findById(id)).thenReturn(Optional.of(ad));
+        when(adRepository.findById(AD_ID)).thenReturn(Optional.of(ad));
 
-        adService.removeAd(id);
+        adService.removeAd(AD_ID);
 
-        verify(imageRepository).delete(image);
-        verify(commentService).deleteCommentsByAdId(id);
-        verify(adRepository).deleteById(id);
+        verify(imageRepository).delete(ad.getImage());
+        verify(commentService).deleteCommentsByAdId(AD_ID);
+        verify(adRepository).deleteById(AD_ID);
     }
 
     @Test
     public void testUpdateAdImage() throws IOException {
-        Integer adId = 1;
-        MultipartFile image = new MockMultipartFile("image.jpg", new byte[0]);
-        when(adRepository.findById(adId)).thenReturn(Optional.of(new Ad()));
-        when(imageRepository.findById(adId)).thenReturn(Optional.of(new Image()));
+        MultipartFile image = new MockMultipartFile(AdServiceTestFabric.FILE_NAME, FILE_CONTENT);
+        when(adRepository.findById(AD_ID)).thenReturn(Optional.of(new Ad()));
+        when(imageRepository.findById(AD_ID)).thenReturn(Optional.of(new Image()));
         when(imageRepository.save(any(Image.class))).thenReturn(new Image());
-        adService.updateAdImage(adId, image);
+        adService.updateAdImage(AD_ID, image);
 
         verify(imageRepository).save(any(Image.class));
     }
+
     @Test
     public void testGetAllAds() {
         List<Ad> mockAds = new ArrayList<>();
         Ad ad1 = new Ad();
-        ad1.setId(1);
-        ad1.setTitle("Title 1");
-        ad1.setDescription("Description 1");
+        ad1.setId(AD_ID);
+        ad1.setTitle(TITLE);
+        ad1.setDescription(DESCRIPTION);
         mockAds.add(ad1);
 
         Ad ad2 = new Ad();
-        ad2.setId(2);
-        ad2.setTitle("Title 2");
-        ad2.setDescription("Description 2");
+        ad2.setId(AD_ID);
+        ad2.setTitle(TITLE);
+        ad2.setDescription(DESCRIPTION);
         mockAds.add(ad2);
 
         List<AdsDto> expectedAdsDtoList = new ArrayList<>();
@@ -117,13 +128,198 @@ public class AdServiceTest {
 
         when(adRepository.findAll()).thenReturn(mockAds);
         when(adMapper.adListToAdsDtoList(mockAds)).thenReturn(expectedAdsDtoList);
-
         ResponseWrapperAds result = adService.getAllAds();
 
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getResults());
+        assertNotNull(result);
+        assertNotNull(result.getResults());
         assertEquals(mockAds.size(), result.getCount());
         assertEquals(expectedResponse, result);
     }
+
+    @Test
+    public void testAddAd() throws IOException {
+        CreateAdsDto createAdsDto = new CreateAdsDto();
+        createAdsDto.setTitle(TITLE);
+
+        MockMultipartFile file = new MockMultipartFile("file", FILE_NAME, FILE_CONTENT_TYPE, FILE_CONTENT);
+
+        Image savedImage = new Image();
+        savedImage.setId(1);
+        savedImage.setMediaType(file.getContentType());
+        savedImage.setData(file.getBytes());
+
+        User user = new User();
+        AdsDto expectedAdsDto = new AdsDto();
+
+        Ad ad = new Ad();
+        ad.setId(1);
+        ad.setTitle(createAdsDto.getTitle());
+
+        when(adMapper.toAd(createAdsDto)).thenReturn(ad);
+        when(imageRepository.save(savedImage)).thenReturn(savedImage);
+        when(userRepository.findByUsername(userService.getCurrentUsername())).thenReturn(Optional.of(user));
+        when(adRepository.save(ad)).thenReturn(ad);
+        when(adMapper.toAdsDto(ad)).thenReturn(expectedAdsDto);
+
+        AdsDto result = adService.addAd(createAdsDto, file);
+
+        assertNotNull(result);
+    }
+
+
+
+    @Test
+    public void testGetAdImageNotFound() {
+        Integer adId = 1;
+
+        when(adRepository.findById(adId)).thenReturn(Optional.empty());
+
+        Image result = adService.getAdImage(adId);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testGetAdImage() {
+        Integer adId = 1;
+        Image expectedImage = new Image();
+        Ad ad = new Ad();
+        ad.setImage(expectedImage);
+        when(adRepository.findById(adId)).thenReturn(Optional.of(ad));
+        Image result = adService.getAdImage(adId);
+        Assertions.assertEquals(expectedImage, result);
+    }
+
+
+    @Test
+    public void testGetAdsNotFound() {
+        Integer id = 1;
+        when(adRepository.findById(id)).thenReturn(Optional.empty());
+        FullAdsDto result = adService.getAds(id);
+        assertNull(result);
+    }
+
+    @Test
+    public void testGetAds() {
+        Integer id = 1;
+
+        Ad ad = new Ad();
+        ad.setId(id);
+        ad.setTitle(TITLE);
+        ad.setDescription(DESCRIPTION);
+
+        FullAdsDto expectedFullAdsDto = new FullAdsDto();
+        expectedFullAdsDto.setPk(ad.getId());
+        expectedFullAdsDto.setTitle(ad.getTitle());
+        expectedFullAdsDto.setDescription(ad.getDescription());
+
+        when(adRepository.findById(id)).thenReturn(Optional.of(ad));
+        when(adMapper.toFullAdsDto(ad)).thenReturn(expectedFullAdsDto);
+
+        FullAdsDto result = adService.getAds(id);
+
+        // Проверка значений полей отдельно
+        Assertions.assertEquals(expectedFullAdsDto.getPk(), result.getPk());
+        Assertions.assertEquals(expectedFullAdsDto.getTitle(), result.getTitle());
+        Assertions.assertEquals(expectedFullAdsDto.getDescription(), result.getDescription());
+    }
+
+
+    @Test
+    public void testGetAdsMe() {
+
+
+        User user = new User();
+        user.setId(1);
+        user.setUsername(USERNAME);
+
+        Ad ad1 = new Ad();
+        ad1.setId(1);
+        ad1.setTitle(TITLE+" 1");
+
+        Ad ad2 = new Ad();
+        ad2.setId(2);
+        ad2.setTitle(TITLE+" 2");
+
+        List<Ad> mockAds = new ArrayList<>();
+        mockAds.add(ad1);
+        mockAds.add(ad2);
+
+        List<AdsDto> expectedAdsDtoList = new ArrayList<>();
+        AdsDto expectedAdDto1 = new AdsDto();
+        expectedAdDto1.setTitle(ad1.getTitle());
+        expectedAdsDtoList.add(expectedAdDto1);
+
+        AdsDto expectedAdDto2 = new AdsDto();
+        expectedAdDto2.setTitle(ad2.getTitle());
+        expectedAdsDtoList.add(expectedAdDto2);
+
+        ResponseWrapperAds expectedResponse = new ResponseWrapperAds();
+        expectedResponse.setCount(mockAds.size());
+        expectedResponse.setResults(expectedAdsDtoList);
+
+        when(userService.getCurrentUsername()).thenReturn(USERNAME);
+        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+        when(adRepository.findAllByUserId(user.getId())).thenReturn(mockAds);
+        when(adMapper.adListToAdsDtoList(mockAds)).thenReturn(expectedAdsDtoList);
+
+        ResponseWrapperAds result = adService.getAdsMe();
+
+        assertNotNull(result);
+        assertEquals(mockAds.size(), result.getCount());
+        assertEquals(expectedAdsDtoList, result.getResults());
+    }
+
+    @Test
+    public void testUpdateDto() {
+
+        Integer newPrice = 999;
+
+        Ad existingAd = new Ad();
+        existingAd.setId(AD_ID);
+        existingAd.setTitle("Old Title");
+        existingAd.setDescription("Old Description");
+        existingAd.setPrice(499);
+
+        CreateAdsDto updateProperties = new CreateAdsDto();
+        updateProperties.setTitle(TITLE);
+        updateProperties.setDescription(DESCRIPTION);
+        updateProperties.setPrice(newPrice);
+
+        AdsDto expectedAdsDto = new AdsDto();
+        expectedAdsDto.setPk(AD_ID);
+        expectedAdsDto.setTitle(TITLE);
+        expectedAdsDto.setPrice(newPrice);
+
+        when(adRepository.findById(AD_ID)).thenReturn(Optional.of(existingAd));
+        when(adMapper.toAdsDto(existingAd)).thenReturn(expectedAdsDto);
+
+        AdsDto result = adService.updateDto(AD_ID, updateProperties);
+
+        assertNotNull(result);
+        assertEquals(AD_ID, result.getPk());
+        assertEquals(TITLE, result.getTitle());
+        assertEquals(newPrice, result.getPrice());
+    }
+
+    @Test
+    public void testCheckAccess() {
+
+
+        Ad ad = new Ad();
+        ad.setId(AD_ID);
+        User adCreator = new User();
+        adCreator.setUsername(CREATOR_USERNAME);
+        ad.setUser(adCreator);
+
+        when(adRepository.findById(AD_ID)).thenReturn(Optional.of(ad));
+        when(userService.getCurrentUserRole()).thenReturn(ADMIN_ROLE);
+        when(userService.getCurrentUsername()).thenReturn(CURRENT_USERNAME);
+
+        ResponseEntity<String> result = adService.checkAccess(AD_ID);
+
+        assertNull(result);
+    }
 }
+
 
