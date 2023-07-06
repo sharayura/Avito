@@ -59,7 +59,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLoadUserByUsernameReturnsUserDetails() {
+    public void testLoadUserByUsernameOk() {
         User user = new User();
         user.setUsername(TEST_USERNAME);
         user.setRole(Role.USER);
@@ -84,7 +84,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetCurrentUsernameReturnsUsername() {
+    public void testGetCurrentUsernameOk() {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         when(authentication.getName()).thenReturn(TEST_USERNAME);
@@ -96,7 +96,7 @@ public class UserServiceTest {
 
 
     @Test
-    public void testGetCurrentUserRoleReturnsRole() {
+    public void testGetCurrentUserRoleOk() {
         String role = "ROLE_USER";
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -110,7 +110,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSetPasswordSetNewPassword() {
+    public void testSetPassword() {
 
         String newPassword = "newpassword";
         UserRepository userRepository = Mockito.mock(UserRepository.class);

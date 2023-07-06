@@ -66,7 +66,7 @@ public class AdServiceTest {
 
     @Test
     public void testRemoveAd() {
-        when(adRepository.findById(TEST_ID)).thenReturn(Optional.of(new Ad()));
+
         Ad ad = new Ad();
         ad.setImage(new Image());
 
@@ -180,18 +180,16 @@ public class AdServiceTest {
 
     @Test
     public void testGetAdsNotFound() {
-        Integer id = 1;
-        when(adRepository.findById(id)).thenReturn(Optional.empty());
-        FullAdsDto result = adService.getAds(id);
+        when(adRepository.findById(TEST_ID)).thenReturn(Optional.empty());
+        FullAdsDto result = adService.getAds(TEST_ID);
         assertNull(result);
     }
 
     @Test
     public void testGetAds() {
-        Integer id = 1;
 
         Ad ad = new Ad();
-        ad.setId(id);
+        ad.setId(TEST_ID);
         ad.setTitle(TEST_TITLE);
         ad.setDescription(TEST_DESCRIPTION);
 
@@ -200,10 +198,10 @@ public class AdServiceTest {
         expectedFullAdsDto.setTitle(ad.getTitle());
         expectedFullAdsDto.setDescription(ad.getDescription());
 
-        when(adRepository.findById(id)).thenReturn(Optional.of(ad));
+        when(adRepository.findById(TEST_ID)).thenReturn(Optional.of(ad));
         when(adMapper.toFullAdsDto(ad)).thenReturn(expectedFullAdsDto);
 
-        FullAdsDto result = adService.getAds(id);
+        FullAdsDto result = adService.getAds(TEST_ID);
 
         Assertions.assertEquals(expectedFullAdsDto.getPk(), result.getPk());
         Assertions.assertEquals(expectedFullAdsDto.getTitle(), result.getTitle());
