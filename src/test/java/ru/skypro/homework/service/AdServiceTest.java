@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
-import static ru.skypro.homework.service.AdServiceTestFabric.*;
+import static ru.skypro.homework.service.ServiceTestFabric.*;
 
 
 
@@ -81,7 +81,7 @@ public class AdServiceTest {
 
     @Test
     public void testUpdateAdImage() throws IOException {
-        MultipartFile image = new MockMultipartFile(AdServiceTestFabric.FILE_NAME, FILE_CONTENT);
+        MultipartFile image = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT);
         when(adRepository.findById(TEST_ID)).thenReturn(Optional.of(new Ad()));
         when(imageRepository.findById(TEST_ID)).thenReturn(Optional.of(new Image()));
         when(imageRepository.save(any(Image.class))).thenReturn(new Image());
@@ -95,14 +95,14 @@ public class AdServiceTest {
         List<Ad> mockAds = new ArrayList<>();
         Ad ad1 = new Ad();
         ad1.setId(TEST_ID);
-        ad1.setTitle(TITLE);
-        ad1.setDescription(DESCRIPTION);
+        ad1.setTitle(TEST_TITLE);
+        ad1.setDescription(TEST_DESCRIPTION);
         mockAds.add(ad1);
 
         Ad ad2 = new Ad();
         ad2.setId(TEST_ID);
-        ad2.setTitle(TITLE);
-        ad2.setDescription(DESCRIPTION);
+        ad2.setTitle(TEST_TITLE);
+        ad2.setDescription(TEST_DESCRIPTION);
         mockAds.add(ad2);
 
         List<AdsDto> expectedAdsDtoList = new ArrayList<>();
@@ -131,9 +131,9 @@ public class AdServiceTest {
     @Test
     public void testAddAd() throws IOException {
         CreateAdsDto createAdsDto = new CreateAdsDto();
-        createAdsDto.setTitle(TITLE);
+        createAdsDto.setTitle(TEST_TITLE);
 
-        MockMultipartFile file = new MockMultipartFile("file", FILE_NAME, FILE_CONTENT_TYPE, FILE_CONTENT);
+        MockMultipartFile file = new MockMultipartFile("file", TEST_FILE_NAME, TEST_FILE_CONTENT_TYPE, TEST_FILE_CONTENT);
 
         Image savedImage = new Image();
         savedImage.setId(1);
@@ -192,8 +192,8 @@ public class AdServiceTest {
 
         Ad ad = new Ad();
         ad.setId(id);
-        ad.setTitle(TITLE);
-        ad.setDescription(DESCRIPTION);
+        ad.setTitle(TEST_TITLE);
+        ad.setDescription(TEST_DESCRIPTION);
 
         FullAdsDto expectedFullAdsDto = new FullAdsDto();
         expectedFullAdsDto.setPk(ad.getId());
@@ -217,15 +217,15 @@ public class AdServiceTest {
 
         User user = new User();
         user.setId(1);
-        user.setUsername(USERNAME);
+        user.setUsername(TEST_USERNAME);
 
         Ad ad1 = new Ad();
         ad1.setId(1);
-        ad1.setTitle(TITLE + " 1");
+        ad1.setTitle(TEST_TITLE + " 1");
 
         Ad ad2 = new Ad();
         ad2.setId(2);
-        ad2.setTitle(TITLE + " 2");
+        ad2.setTitle(TEST_TITLE + " 2");
 
         List<Ad> mockAds = new ArrayList<>();
         mockAds.add(ad1);
@@ -244,8 +244,8 @@ public class AdServiceTest {
         expectedResponse.setCount(mockAds.size());
         expectedResponse.setResults(expectedAdsDtoList);
 
-        when(userService.getCurrentUsername()).thenReturn(USERNAME);
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+        when(userService.getCurrentUsername()).thenReturn(TEST_USERNAME);
+        when(userRepository.findByUsername(TEST_USERNAME)).thenReturn(Optional.of(user));
         when(adRepository.findAllByUserId(user.getId())).thenReturn(mockAds);
         when(adMapper.adListToAdsDtoList(mockAds)).thenReturn(expectedAdsDtoList);
 
@@ -267,13 +267,13 @@ public class AdServiceTest {
         existingAd.setPrice(499);
 
         CreateAdsDto updateProperties = new CreateAdsDto();
-        updateProperties.setTitle(TITLE);
-        updateProperties.setDescription(DESCRIPTION);
+        updateProperties.setTitle(TEST_TITLE);
+        updateProperties.setDescription(TEST_DESCRIPTION);
         updateProperties.setPrice(newPrice);
 
         AdsDto expectedAdsDto = new AdsDto();
         expectedAdsDto.setPk(TEST_ID);
-        expectedAdsDto.setTitle(TITLE);
+        expectedAdsDto.setTitle(TEST_TITLE);
         expectedAdsDto.setPrice(newPrice);
 
         when(adRepository.findById(TEST_ID)).thenReturn(Optional.of(existingAd));
@@ -282,7 +282,7 @@ public class AdServiceTest {
         AdsDto result = adService.updateDto(TEST_ID, updateProperties);
         assertNotNull(result);
         assertEquals(TEST_ID, result.getPk());
-        assertEquals(TITLE, result.getTitle());
+        assertEquals(TEST_TITLE, result.getTitle());
         assertEquals(newPrice, result.getPrice());
     }
 
@@ -290,12 +290,12 @@ public class AdServiceTest {
     public void testHasAdAccessUsernameTrue() {
         Ad ad = new Ad();
         User adCreator = new User();
-        adCreator.setUsername(CREATOR_USERNAME);
+        adCreator.setUsername(TEST_CREATOR_USERNAME);
         ad.setUser(adCreator);
 
         when(adRepository.findById(TEST_ID)).thenReturn(java.util.Optional.of(ad));
-        when(userService.getCurrentUserRole()).thenReturn(USER_ROLE);
-        when(userService.getCurrentUsername()).thenReturn(CREATOR_USERNAME);
+        when(userService.getCurrentUserRole()).thenReturn(TEST_USER_ROLE);
+        when(userService.getCurrentUsername()).thenReturn(TEST_CREATOR_USERNAME);
         boolean result = adService.hasAdAccess(TEST_ID);
         assertTrue(result);
     }
@@ -304,12 +304,12 @@ public class AdServiceTest {
     public void testHasAdAccessUsernameFalse() {
         Ad ad = new Ad();
         User adCreator = new User();
-        adCreator.setUsername(CREATOR_USERNAME);
+        adCreator.setUsername(TEST_CREATOR_USERNAME);
         ad.setUser(adCreator);
 
         when(adRepository.findById(TEST_ID)).thenReturn(java.util.Optional.of(ad));
-        when(userService.getCurrentUserRole()).thenReturn(USER_ROLE);
-        when(userService.getCurrentUsername()).thenReturn(CURRENT_USERNAME);
+        when(userService.getCurrentUserRole()).thenReturn(TEST_USER_ROLE);
+        when(userService.getCurrentUsername()).thenReturn(TEST_CURRENT_USERNAME);
         boolean result = adService.hasAdAccess(TEST_ID);
         assertFalse(result);
     }
@@ -318,12 +318,12 @@ public class AdServiceTest {
     public void testHasAdAccessAdmin() {
         Ad ad = new Ad();
         User adCreator = new User();
-        adCreator.setUsername(CREATOR_USERNAME);
+        adCreator.setUsername(TEST_CREATOR_USERNAME);
         ad.setUser(adCreator);
 
         when(adRepository.findById(TEST_ID)).thenReturn(java.util.Optional.of(ad));
-        when(userService.getCurrentUserRole()).thenReturn(ADMIN_ROLE);
-        when(userService.getCurrentUsername()).thenReturn(CURRENT_USERNAME);
+        when(userService.getCurrentUserRole()).thenReturn(TEST_ADMIN_ROLE);
+        when(userService.getCurrentUsername()).thenReturn(TEST_CURRENT_USERNAME);
         boolean result = adService.hasAdAccess(TEST_ID);
         assertTrue(result);
     }
